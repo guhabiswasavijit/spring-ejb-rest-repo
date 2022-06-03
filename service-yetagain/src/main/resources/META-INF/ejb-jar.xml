@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd"
+         version="3.0">
+    <enterprise-beans>
+        <session>
+            <ejb-name>BankTxFacade</ejb-name>
+            <mapped-name>ejb/BankTxFacade</mapped-name>
+            <business-local>self.heresay.BankTxFacadeLocal</business-local>
+            <business-remote>self.heresay.BankTxFacadeRemote</business-remote>
+            <ejb-class>self.heresay.BankTxFacade</ejb-class>
+            <session-type>Stateless</session-type>
+            <transaction-type>Bean</transaction-type>
+        </session>
+    </enterprise-beans>
+</ejb-jar>
