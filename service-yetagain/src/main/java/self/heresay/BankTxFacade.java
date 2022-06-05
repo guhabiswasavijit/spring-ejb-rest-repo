@@ -1,18 +1,17 @@
 package self.heresay;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.query.Query;
-import lombok.extern.slf4j.Slf4j;
+import org.hibernate.NonUniqueResultException;
+
 import self.heresay.model.Role;
 import self.heresay.model.Transaction;
 import self.heresay.model.User;
@@ -20,47 +19,43 @@ import self.heresay.model.User;
 @Stateless(name = "BankTxFacade")
 @Local(BankTxFacadeLocal.class)
 @Remote(BankTxFacadeRemote.class)
-@Slf4j
-public class BankTxFacade implements BankTxFacadeLocal, BankTxFacadeRemote{
-	private SessionFactory sessionFactory;
-	public BankTxFacade() {
-		Configuration config = new Configuration();
-		config.addAnnotatedClass(Transaction.class);
-		config.addAnnotatedClass(Role.class);
-		config.addAnnotatedClass(User.class);
-		/*
-		 * Properties props = new Properties(); try {
-		 * props.load(BankTxFacade.class.getResourceAsStream("hibernate.properties")); }
-		 * catch (IOException ex) { log.error("unable to load hibernate.properties",ex);
-		 * } config.addProperties(props);
-		 */
-		sessionFactory = config.buildSessionFactory();
-		log.info("created session factory");
-	}
+public class BankTxFacade implements BankTxFacadeLocal, BankTxFacadeRemote {
+	@PersistenceContext(unitName="finance-db")
+	private EntityManager entityManager;
+
 	public void addTransaction(Transaction tx) {
-		Session session = sessionFactory.openSession();
-		org.hibernate.Transaction transaction = session.beginTransaction();
-		session.persist(tx);
-		transaction.commit();
+		entityManager.persist(tx);
 	}
 
 	public List<Transaction> getTransactions() {
-		Session session = sessionFactory.openSession();
-		Query<Transaction> qry = session.createQuery("from Transaction",Transaction.class);
-		return qry.list();
+		return entityManager.createQuery("from Transaction",Transaction.class).getResultList();
 	}
 	public User getUserByName(String userName) {
-		Session session = sessionFactory.openSession();
-		Query<User> qry = session.createQuery("from User where username =:userName", User.class);
+		TypedQuery<User> qry = entityManager.createQuery("from User where username =:userName", User.class);
 		qry.setParameter("userName",userName);
-		User user = qry.uniqueResult();
+		User user = null;
+		try {
+			user = qry.getSingleResult();
+		} catch (NoResultException | NonUniqueResultException ex) {
+			ex.printStackTrace();
+		}
 		return user;
 	}
 	public void addUser(User user) {
-		Session session = sessionFactory.openSession();
-		org.hibernate.Transaction transaction = session.beginTransaction();
-		session.persist(user);
-		transaction.commit();
+		entityManager.persist(user);
 	}
-
+	public Role findRoleById(Integer roleId) {
+		return entityManager.find(Role.class, roleId);
+	}
+	public Role findRoleByName(String i_role) {
+		TypedQuery<Role> qry = entityManager.createQuery("from Role where name =:roleName",Role.class);
+		qry.setParameter("roleName",i_role);
+		Role role = null;
+		try {
+			role = qry.getSingleResult();
+		} catch (NoResultException | NonUniqueResultException ex) {
+			ex.printStackTrace();
+		}
+		return role;
+	}
 }

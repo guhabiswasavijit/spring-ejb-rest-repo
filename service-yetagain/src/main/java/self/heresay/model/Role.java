@@ -15,11 +15,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class Role {
-    @Id
+public class Role implements java.io.Serializable{
+	private static final long serialVersionUID = 1L;
+	@Id
     @Column(name = "role_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+	@Column(name="name")
     private String name;
   
 }

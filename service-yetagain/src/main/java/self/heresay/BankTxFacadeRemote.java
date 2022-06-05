@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import self.heresay.model.Role;
 import self.heresay.model.Transaction;
 import self.heresay.model.User;
 
@@ -13,5 +14,7 @@ public interface BankTxFacadeRemote {
 	List<Transaction> getTransactions();
 	User getUserByName(String userName);
 	void addUser(User user);
+	Role findRoleById(Integer roleId);
+	Role findRoleByName(String i_role);
 }
 

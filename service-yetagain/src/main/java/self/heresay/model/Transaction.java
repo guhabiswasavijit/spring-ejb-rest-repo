@@ -17,7 +17,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class Transaction {
+public class Transaction implements java.io.Serializable{
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private Long id;

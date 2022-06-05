@@ -42,12 +42,8 @@ public class UserController {
         rUser.setEnabled(true);
         rUser.setPassword(request.getPassword());
         rUser.setUsername(request.getUsername());
-        Set<Role> roles = new HashSet<Role>();
-		Role adminRole = new Role();
-		adminRole.setName("ADMIN");
-		roles.add(adminRole);
-		rUser.setRoles(roles);
-		User user = userService.createNewUser(rUser);
+        rUser.setEmail(request.getEmail());
+		User user = userService.createNewUser(rUser,request.getRoles());
 		CreateUserResponse response = new CreateUserResponse();
 		response.setUsername(user.getUsername());
 		return response;
