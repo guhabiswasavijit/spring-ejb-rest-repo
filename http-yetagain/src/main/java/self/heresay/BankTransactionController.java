@@ -5,9 +5,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -21,23 +21,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema.ColumnType;
-import lombok.extern.slf4j.Slf4j;
 import self.heresay.model.Transaction;
 
 @RestController
 @RequestMapping("bank-tx")
-@Slf4j
 public class BankTransactionController {
+	private Log log = LogFactory.getLog(BankTransactionController.class);
 	@Autowired
-	private BankTxFacadeRemote bankTxFacade;
+	private BankTxFacadeLocal bankTxFacade;
 	
-	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, path = "/upload", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> bulkUploadtransactions(@RequestParam("file") MultipartFile file) {
-		return new ResponseEntity<>( "Successfully uploaded file",HttpStatus.OK);
+	@PostMapping(path = "/upload", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<UploadFileResponse> bulkUploadtransactions(@RequestParam("file") MultipartFile file) {
+		log.info("about to upload file"+file);
+		UploadFileResponse response = null;
+		try {
+			response = this.uploadFile(file);
+		}catch(UploadException ex) {
+			response = new UploadFileResponse("error uploading file");
+			return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		log.info("done upload file");
+		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
 	private UploadFileResponse uploadFile(MultipartFile processFile){
 		CsvSchema txSchema = CsvSchema.builder()
@@ -55,6 +64,7 @@ public class BankTransactionController {
 	        }
 		} catch (IOException ex) {
 			log.error("error uploading file",ex);
+			throw new UploadException("error uploading file");
 		}
 		return new UploadFileResponse("Successfully uploaded file");
 	}

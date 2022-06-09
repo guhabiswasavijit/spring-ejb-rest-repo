@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import self.heresay.config.JwtTokenUtil;
 import self.heresay.service.IUserService;
-
-
 @RestController
 @CrossOrigin
 public class JwtAuthenticationController {
+	private Log log = LogFactory.getLog(JwtAuthenticationController.class);
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -34,7 +35,7 @@ public class JwtAuthenticationController {
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
 			throws Exception {
-
+        log.info("Called authentication endpoint");
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
 		final UserDetails userDetails = userService

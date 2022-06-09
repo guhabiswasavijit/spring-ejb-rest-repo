@@ -21,6 +21,7 @@
 			<groupId>self.heresay</groupId>
 			<artifactId>service-yetagain</artifactId>
 			<version>1.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.reactivestreams</groupId>

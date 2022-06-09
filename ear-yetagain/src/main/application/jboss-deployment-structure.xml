@@ -1,0 +1,14 @@
+<jboss-deployment-structure>
+    <ear-subdeployments-isolated>false</ear-subdeployments-isolated>
+	<deployment>
+		<exclude-subsystems>
+            <subsystem name="jaxrs"/>
+        </exclude-subsystems>
+	</deployment>
+	<sub-deployment name="http-yetagain-1.0.war">
+		<local-last value="false" />
+	</sub-deployment>
+	<sub-deployment name="service-yetagain-1.0.jar">
+		<local-last value="false" />
+	</sub-deployment>
+</jboss-deployment-structure>

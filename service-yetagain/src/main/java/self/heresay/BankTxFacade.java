@@ -16,7 +16,7 @@ import self.heresay.model.Role;
 import self.heresay.model.Transaction;
 import self.heresay.model.User;
 
-@Stateless(name = "BankTxFacade")
+@Stateless(name ="BankTxFacade")
 @Local(BankTxFacadeLocal.class)
 @Remote(BankTxFacadeRemote.class)
 public class BankTxFacade implements BankTxFacadeLocal, BankTxFacadeRemote {
